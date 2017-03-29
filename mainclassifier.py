@@ -13,7 +13,7 @@ import pandas as pd
 import xgboost as xgb
 from sklearn.metrics import log_loss
 from sklearn import model_selection
-
+import kneighbors as kn
 
 
 class XGBoost_Classifier:
@@ -39,7 +39,7 @@ class XGBoost_Classifier:
         self.param['seed'] = _seed
         self.param['silent'] = _silent
         self.num_rounds = _num_rounds
-        
+
     def train(self,x_train,y_train):
         # x_train = preprocessing.scale(x_train)
         xgmat_train = xgb.DMatrix(x_train,label=y_train)
@@ -47,21 +47,21 @@ class XGBoost_Classifier:
         watch_list = [(xgmat_train,'train')]
         self.model = xgb.train(param_list,xgmat_train,self.num_rounds)
         return self.model
-    
+
     def predict(self,x_test):
         # x_test = preprocessing.scale(x_test)
         xgmat_test = xgb.DMatrix(x_test)
         y_predict = self.model.predict(xgmat_test)
         return y_predict
-    
+
     def predict_logloss(self,x_test,y_test):
         # x_test = preprocessing.scale(x_test)
         xgmat_test = xgb.DMatrix(x_test)
         y_predict = self.model.predict(xgmat_test)
         logloss = log_loss(y_test,y_predict)
         return y_predict,logloss
-    
-    
+
+
 #对label的处理
 def target_trans(df):
     target_map = {'high':0,'medium':1,'low':2}
@@ -78,6 +78,23 @@ def feature_trans_bed(df,used_columns):
     #     if s in used_columns:used_columns.remove(s)
     used_columns.extend(['bedrooms','bathrooms','pricePerBed','pricePerBath','pricePerRoom'])
     return df,used_columns
+
+#处理坐标，使用KNN将地理坐标变为该处预期价格
+def feature_trans_location(df,used_columns):
+    print("calculating locationValue")
+    neigh = kn.PositionValueProphet(20)
+    for key in df['latitude'].keys():
+        df.at[key,'locationValue'] = neigh.predict([[df['latitude'][key],df['longitude'][key]]])
+    df['netLocationValue'] = df['locationValue'] - df['price'] //溢价
+    if 'latitude' in used_columns:
+        used_columns.remove('latitude')
+    if 'longitude' in used_columns:
+        used_columns.remove('longitude')
+    used_columns += ['locationValue']
+    used_columns += ['netLocationValue']
+    print("locationValue done!")
+    return df,used_columns
+
 
 #对建立时间的简单分解
 def feature_trans_create_time(df,used_columns):
@@ -189,11 +206,11 @@ def feature_trans_features_again(df,used_columns):
             a.append(j[0])
     b=np.array(a)
     for i in range(long2):
-       
+
          fd[str(cooo[i])]=b[:,i]
 
     return df,used_columns
-    
+
 
 
 def run_model(path_train,path_test,path_save = None,kfold = 0):
@@ -208,8 +225,9 @@ def run_model(path_train,path_test,path_save = None,kfold = 0):
         df,used_columns = feature_trans_create_time(df,used_columns)
         df,used_columns = feature_trans_features_again(df,used_columns)
         df,used_columns = feature_trans_bed(df,used_columns)
+        df,used_columns = feature_trans_location(df, used_columns)
         df_list.append(df)
-        
+
     df_train,df_test = df_list
 
     df_train,df_test,used_columns = feature_trans_manager_id_2(df_train,df_test,used_columns)
@@ -260,15 +278,14 @@ if __name__ == '__main__':
     path_save = 'data/submission.csv'
     run_model(path_train,path_test,path_save,kfold=10)
 
-    
 
-    
 
-        
-        
-        
-        
-        
-        
-        
-        
+
+
+
+
+
+
+
+
+
