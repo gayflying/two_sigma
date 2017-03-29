@@ -13,8 +13,8 @@ import pandas as pd
 import xgboost as xgb
 from sklearn.metrics import log_loss
 from sklearn import model_selection
-from sklearn import preprocessing
-from sklearn.model_selection import StratifiedKFold
+
+
 
 class XGBoost_Classifier:
     '''
@@ -125,6 +125,19 @@ def feature_trans_manager_id(df_train,df_test,used_columns):
     used_columns.extend(['high_ratio','medium_ratio'])
     return df_train,df_test,used_columns
 
+def feature_trans_manager_id_2(df_train,df_test,used_clumns):
+    from managerhandler import manager_skill
+    trans = manager_skill()
+    # First, fit it to the training data:
+    trans.fit(df_train, df_train['target'])
+    # Now transform the training data
+    X_train_transformed = trans.transform(df_train)
+    # You can also do fit and transform in one step:
+    X_val_transformed = trans.transform(df_test)
+    used_clumns.append('manager_skill')
+    return X_train_transformed,X_val_transformed,used_clumns
+
+
 #阿东提取的features特征
 def feature_trans_features_again(df,used_columns):
 
@@ -199,7 +212,7 @@ def run_model(path_train,path_test,path_save = None,kfold = 0):
         
     df_train,df_test = df_list
 
-    # df_train,df_test,used_columns = feature_trans_manager_id(df_train,df_test,used_columns)
+    df_train,df_test,used_columns = feature_trans_manager_id_2(df_train,df_test,used_columns)
 
     classifier = XGBoost_Classifier(150)
     used_columns = list(set(used_columns))
@@ -235,7 +248,7 @@ def run_model(path_train,path_test,path_save = None,kfold = 0):
 
     if path_save:
         final_predict = classifier.predict(df_test[used_columns])
-        df_result = pd.DataFrame(final_predict,columns=["high", "medium", "low"],index=df_test.index)
+        df_result = pd.DataFrame(final_predict,columns=["high", "medium", "low"],index=df_test.listing_id)
         df_result.to_csv(path_save)
 
 
