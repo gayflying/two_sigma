@@ -75,3 +75,4 @@ fabric.properties
 # Data and result
 *.json
 *.csv
+__pycache__/

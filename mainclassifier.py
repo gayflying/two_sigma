@@ -20,8 +20,8 @@ class XGBoost_Classifier:
     '''
     The main classifier
     '''
-    def __init__(self,_num_rounds,_eta=0.1,_gamma=0,_max_depth=6,_min_child_weight=1,_max_delt_step=0,
-                 _subsample=0.7,_colsample_bytree=0.7,_scale_position_weight=0,
+    def __init__(self,_num_rounds,_eta=0.05,_gamma=0,_max_depth=10,_min_child_weight=1,_max_delt_step=0,
+                 _subsample=0.5,_colsample_bytree=0.5,_scale_position_weight=0,
                  _objective='multi:softprob',_num_class = 3,_eval_metric='mlogloss',
                  _seed=0,_silent=1):
         self.param = {}
@@ -40,12 +40,12 @@ class XGBoost_Classifier:
         self.param['silent'] = _silent
         self.num_rounds = _num_rounds
         
-    def train(self,x_train,y_train):
+    def train(self,x_train,y_train, eval_list=(), early_stopping=None):
         # x_train = preprocessing.scale(x_train)
         xgmat_train = xgb.DMatrix(x_train,label=y_train)
         param_list = list(self.param.items())
         watch_list = [(xgmat_train,'train')]
-        self.model = xgb.train(param_list,xgmat_train,self.num_rounds)
+        self.model = xgb.train(param_list,xgmat_train,self.num_rounds, evals=eval_list, early_stopping_rounds=early_stopping)
         return self.model
     
     def predict(self,x_test):
@@ -89,6 +89,7 @@ def feature_trans_create_time(df,used_columns):
     df['year'] = create_date.dt.year
     df['month'] = create_date.dt.month
     df['day'] = create_date.dt.day
+    df['dayofweek'] = create_date.dt.dayofweek
     if 'created' in used_columns:
         used_columns.remove('created')
     used_columns += ['year','month','day']
@@ -164,7 +165,7 @@ def feature_trans_features_again(df,used_columns):
         return x
     # train_df = pd.read_json("data/train.json")
     # test_df = pd.read_json("data/test.json")
-    check=pd.read_csv("data/check.csv",encoding='gbk')
+    check=pd.read_csv("data/check.txt",encoding='gbk')
     used_columns += list(check['key'])
     fd= df
     fd["features"] = fd[["features"]].apply(lambda _: [list(map(str.strip, map(str.lower, x))) for x in _])
@@ -208,13 +209,20 @@ def run_model(path_train,path_test,path_save = None,kfold = 0):
         df,used_columns = feature_trans_create_time(df,used_columns)
         df,used_columns = feature_trans_features_again(df,used_columns)
         df,used_columns = feature_trans_bed(df,used_columns)
+        # Temp feature, Description Length
+        df['length'] = df['description'].str.split().apply(len)
+        used_columns.extend(['length'])
+        
         df_list.append(df)
         
     df_train,df_test = df_list
 
     df_train,df_test,used_columns = feature_trans_manager_id_2(df_train,df_test,used_columns)
 
-    classifier = XGBoost_Classifier(150)
+    classifier = XGBoost_Classifier(3000,_eta=0.01,_gamma=0,_max_depth=10,_min_child_weight=1,_max_delt_step=0,
+                 _subsample=0.5,_colsample_bytree=0.5,_scale_position_weight=0,
+                 _objective='multi:softprob',_num_class = 3,_eval_metric='mlogloss',
+                 _seed=0,_silent=1)
     used_columns = list(set(used_columns))
     print('features engeerning done!..')
     print('used features is ', used_columns)
@@ -224,7 +232,10 @@ def run_model(path_train,path_test,path_save = None,kfold = 0):
         x_train = df_train[used_columns].iloc[train]
         y_train = df_train['target'].iloc[train]
         # print(x_train.shape, y_train.shape)
-        classifier.train(x_train, y_train)
+        x_test = df_train[used_columns].iloc[test]
+        y_test = df_train['target'].iloc[test]
+        xgmat_test = xgb.DMatrix(x_test,label=y_test)
+        classifier.train(x_train, y_train, [(xgmat_test, 'valid')], 20)
         print('train done!\nstart to predict and calculate the trainning loss..')
         y_train_predict,train_loss = classifier.predict_logloss(x_train,y_train)
         print('train shape is %s \ntrain loss is %.9f' % ((str(x_train.shape)),train_loss))
