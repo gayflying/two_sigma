@@ -1,0 +1,214 @@
+key,sum
+$250,['$250 security deposit']
+1mon,['1 month free']
+2ful,['2 full baths']
+24do,"['24 hour concierge/doorman', '24 hour doorman', '24-hour doorman', '24/7 concierge', '24/7 doorman', '24/7 doorman concierge', '24hr doorman']"
+aful,['a full service luxury highrise']
+actu,"['actual apt. photos', 'actual photos!']"
+airc,['air conditioning']
+allp,['all pets ok']
+allu,['all utilities included']
+assi,['assigned-parking-space']
+atte,['attended lobby']
+back,['backyard']
+balc,['balcony']
+base,['basement storage']
+bask,['basketball court']
+bike,"['bicycle room', 'bike room', 'bike storage']"
+bill,"['billiards', 'billiards room', 'billiards table and wet bar']"
+bran,['brand new']
+brea,['breakfast bar']
+brig,['bright']
+brow,['brownstone']
+buil,['building-common-outdoor-space']
+busi,['business center']
+cabl,"['cable ready', 'cable/satellite tv']"
+call,['call/text abraham caro @ 917-373-0862']
+cats,['cats allowed']
+cent,"['central a/c', 'central ac', 'central air', 'central heat']"
+chef,['chefs kitchen']
+chil,"[""children's playroom"", 'childrens playroom', 'children¡¯s playroom']"
+cine,['cinema room']
+city,['city view']
+clos,"['close to subway', 'close to transit', 'closet space', 'closets galore!']"
+club,['club sun deck has spectacular city and river views']
+cold,['cold storage']
+cmba,['common backyard']
+cmga,['common garden']
+cmod,['common outdoor space']
+cmpa,['common parking/garage']
+cmro,['common roof deck']
+cmst,['common storage']
+cmte,['common terrace']
+comm,['community recreation facilities']
+comp,"['complimentary continental breakfast', 'complimentary sunday brunch']"
+door,"['concierge', 'concierge service', 'doorman']"
+cond,['condo finishes']
+corn,['corner unit']
+cour,['courtyard']
+crow,['crown moldings']
+deck,['deck']
+dcbr,"['deco brick wall', 'deco brick walls']"
+dcfi,['deco fireplace']
+dcra,['decorative fireplace']
+dini,['dining room']
+dipl,['diplomats ok']
+dish,"['dish washer', 'dishwasher']"
+dogs,['dogs allowed']
+door,"['concierge', 'concierge service', 'doorman']"
+dryc,['dry cleaning service']
+drye,['dryer in unit']
+dupl,"['duplex', 'duplex lounge']"
+dw,['dw']
+eati,"['eat in kitchen', 'eat-in kitchen']"
+elec,['electronic rent payment']
+eleg,['elegant glass-enclosed private lounge with magnificent river views']
+elev,['elevator']
+excl,['exclusive']
+exer,['exercise/yoga studio']
+expo,['exposed brick']
+extr,['extra room']
+fire,"['fireplace', 'fireplaces']"
+fitn,"['fitness center', 'fitness facility', 'fitness room']"
+flex,"['flex-2', 'flex-3']"
+free,"['free wifi', 'free wifi in club lounge']"
+fren,['french doors']
+ftdo,['ft doorman']
+full,"['full service garage', 'full-time doorman', 'fully  equipped', 'fully-equipped club fitness center']"
+furn,['furnished']
+game,['game room']
+gara,['garage']
+garb,['garbage disposal']
+gard,"['garden', 'garden/patio']"
+gran,"['granite counter tops', 'granite counters', 'granite countertops', 'granite kitchen']"
+gree,['green building']
+guar,['guarantors accepted']
+gutr,['gut renovated']
+gym,['gym']
+gymi,['gym in building']
+gym/,['gym/fitness']
+hard,"['hardwood', 'hardwood floor', 'hardwood floors']"
+heal,['health club']
+heat,['heat/hot water included']
+hiri,['hi rise']
+high,"['high ceiling', 'high ceilings', 'high floor', 'high speed internet', 'high speed internet available', 'high-speed internet', 'highrise']"
+home,['home office']
+hous,"['housekeeping + dry cleaning service', 'housekeeping service']"
+inun,['in-unit washer/dryer']
+indo,"['indoor pool', 'indoor swimming pool']"
+inte,['intercom']
+jacu,['jacuzzi']
+king,['king sized bedroom']
+larg,"['large living room', 'large living-room']"
+laun,"['laundry', 'laundry & housekeeping', 'laundry in building', 'laundry in unit', 'laundry on every floor', 'laundry on floor', 'laundry room']"
+ligh,['light']
+live,"['live in super', 'live-in super', 'live-in superintendent', 'live/work']"
+loft,['loft']
+loun,"['lounge', 'lounge room']"
+lowf,['low fee']
+lowr,"['low-rise', 'lowrise']"
+luxu,['luxury building']
+magn,['magnificent venetian-style']
+mail,['mail room']
+marb,"['marble bath', 'marble bathroom']"
+medi,"['media room', 'media screening room']"
+micr,['microwave']
+midr,"['mid-rise', 'midrise']"
+mint,['mint']
+movi,['movie theater']
+mult,"['multi level', 'multi-level']"
+natu,['natural light']
+newc,['new construction']
+newk,['new kitchen']
+newl,['newly renovated']
+nofe,['no fee']
+nope,['no pets']
+osat,"['on-site atm', 'on-site atm machine', 'on-site attended garage']"
+osga,['on-site garage']
+osla,['on-site laundry']
+osli,['on-site lifestyle concierge by luxury attach¨¦']
+ospa,"['on-site parking', 'on-site parking available', 'on-site parking lot']"
+ossu,['on-site super']
+onem,"['one month fee', 'one month free', 'one month free rent']"
+odar,['outdoor areas']
+odba,['outdoor basketball court']
+oden,['outdoor entertainment space']
+odpo,['outdoor pool']
+odro,['outdoor roof deck overlooking new york harbor and battery park']
+odsp,['outdoor space']
+odte,['outdoor terrace']
+pack,"['package room', 'package service']"
+park,"['park view', 'parking', 'parking available', 'parking space']"
+part,"['part-time doorman', 'party room']"
+pati,['patio']
+pent,['penthouse']
+petf,['pet friendly']
+pets,"['pets', 'pets allowed', 'pets on approval', 'pets: cats/small dogs']"
+play,"['playroom', 'playroom/nursery']"
+pool,['pool']
+post,"['post war', 'post-war', 'postwar']"
+prew,"['pre war', 'pre-war', 'prewar']"
+pvba,"['private backyard', 'private balcony', 'private-balcony']"
+pvde,['private deck']
+pvga,['private garden']
+pvla,['private laundry room on every floor']
+pvod,"['private outdoor space', 'private-outdoor-space']"
+pvpa,['private parking']
+pvro,"['private roof deck', 'private roofdeck']"
+pvst,['private storage']
+pvte,['private terrace']
+pvba,"['private backyard', 'private balcony', 'private-balcony']"
+pvod,"['private outdoor space', 'private-outdoor-space']"
+publ,['publicoutdoor']
+quee,"['queen size bedrooms', 'queen sized bedrooms', 'queen sized rooms']"
+rece,['recessed lighting']
+redu,['reduced fee']
+reno,"['renovated', 'renovated kitchen']"
+resi,"['residents garden', 'residents lounge']"
+roof,"['roof', 'roof access', 'roof deck', 'roof deck with grills', 'roof decks', 'roof-deck', 'roofdeck', 'rooftop', 'rooftop deck', 'rooftop terrace']"
+s/sa,['s/s appliances']
+saun,['sauna']
+scre,['screening room']
+sepa,['separate kitchen']
+shar,"['share ok', 'shared backyard', 'shared garden', 'shares ok']"
+shor,['short term allowed']
+simp,['simplex']
+skyl,"['skylight', 'skylight atrium', 'skylights', 'skyline view']"
+sout,['southern exposure']
+spas,['spa services']
+spac,['spacious']
+ssap,['ss appliances']
+stai,"['stainless steel', 'stainless steel appliances', 'stainless steel kitchen']"
+stat,['state-of-the-art fitness center']
+stea,['steam room']
+ston,['stone countertops']
+stor,"['storage', 'storage available', 'storage facilities available', 'storage room', 'storage space']"
+subl,['sublet']
+subw,['subway']
+sund,['sundeck']
+supe,['super on-site']
+swim,['swimming pool']
+tena,['tenant lounge']
+terr,"['terrace', 'terraces / balconies']"
+tons,['tons of natural light']
+town,['townhouse']
+trip,['triplex']
+twen,['twenty-four hour concierge and doorman']
+unas,['unassigned paid parking available nearby']
+unde,['underground parking']
+util,['utilities included']
+vale,"['valet', 'valet laundry', 'valet parking', 'valet service', 'valet services', 'valet services (housekeeping/dry cleaning available)', 'valet services including dry cleaning']"
+vene,['venetian-style lobby']
+vide,['video intercom']
+view,['view']
+virt,"['virtual doorman', 'virtual tour']"
+walk,"['walk in closet', 'walk in closet(s)', 'walk-in closet', 'walk-up']"
+wash,"['washer & dryer', 'washer in unit', 'washer/dryer', 'washer/dryer hookup', 'washer/dryer in bldg', 'washer/dryer in building', 'washer/dryer in unit', 'washer/dryer in-unit']"
+wate,['water view']
+whee,"['wheelchair access', 'wheelchair ramp']"
+wifi,"['wi-fi access', 'wifi', 'wifi access', 'wifi in resident lounge']"
+wine,['wine cooler']
+wood,['wood-burning fireplace']
+work,['working fireplace']
+yard,['yard']
+yoga,"['yoga classes', 'yoga room']"
