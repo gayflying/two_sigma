@@ -20,6 +20,6 @@ out : sklearn.neighbors.KNeighborsRegressor
 """
 def PositionValueProphet(neighbor_num=20):
     interestlevelData = np.array([line.replace("\n","").split(' ') for line in open('data/locationInterestLevel.txt').readlines()]).astype(np.float64)
-    neigh = KNeighborsRegressor(n_neighbors=neighbor_num, weights='distance')
+    neigh = KNeighborsRegressor(n_neighbors=neighbor_num, weights='uniform')
     neigh.fit(interestlevelData[:,:2], interestlevelData[:,2:])
     return neigh
