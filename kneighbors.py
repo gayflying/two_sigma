@@ -6,7 +6,7 @@ import numpy as np
 from sklearn.neighbors import KNeighborsRegressor
 
 """
-Use 'data/price.txt' to build a KNN regressor based on 'distance', which means the near instance will contribute more on the predict value instead of the mean value.
+Use 'data/locationInterestLevel.txt' to build a KNN regressor based on 'distance', which means the near instance will contribute more on the predict interestlevel instead of the mean level.
 
 Parameters
 ----------
@@ -19,7 +19,7 @@ out : sklearn.neighbors.KNeighborsRegressor
     A Regressor that
 """
 def PositionValueProphet(neighbor_num=20):
-    priceData = np.array([line.replace("\n","").split(' ') for line in open('data/price.txt').readlines()]).astype(np.float64)
+    interestlevelData = np.array([line.replace("\n","").split(' ') for line in open('data/locationInterestLevel.txt').readlines()]).astype(np.float64)
     neigh = KNeighborsRegressor(n_neighbors=neighbor_num, weights='distance')
-    neigh.fit(priceData[:,:2], priceData[:,2])
+    neigh.fit(interestlevelData[:,:2], interestlevelData[:,2:])
     return neigh

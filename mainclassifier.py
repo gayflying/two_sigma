@@ -79,20 +79,23 @@ def feature_trans_bed(df,used_columns):
     used_columns.extend(['bedrooms','bathrooms','pricePerBed','pricePerBath','pricePerRoom'])
     return df,used_columns
 
-#处理坐标，使用KNN将地理坐标变为该处预期价格
+#处理坐标，使用KNN将地理坐标变为该处预期interestlevel
 def feature_trans_location(df,used_columns):
-    print("calculating locationValue")
+    print("calculating locationInterest")
     neigh = kn.PositionValueProphet(20)
-    for key in df['latitude'].keys():
-        df.at[key,'locationValue'] = neigh.predict([[df['latitude'][key],df['longitude'][key]]])
-    df['netLocationValue'] = df['locationValue'] - df['price'] //溢价
+    predict = [neigh.predict([[df['latitude'][key],df['longitude'][key]]])[0] for key in df['latitude'].keys()]
+    predict = np.array(predict)
+    df['lowLikely'] = predict[:,0]
+    df['mediumLikely'] = predict[:,1]
+    df['highLikely'] = predict[:,2]
     if 'latitude' in used_columns:
         used_columns.remove('latitude')
     if 'longitude' in used_columns:
         used_columns.remove('longitude')
-    used_columns += ['locationValue']
-    used_columns += ['netLocationValue']
-    print("locationValue done!")
+    used_columns += ['lowLikely']
+    used_columns += ['mediumLikely']
+    used_columns += ['highLikely']
+    print("locationInterest done!")
     return df,used_columns
 
 
