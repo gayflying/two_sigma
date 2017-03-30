@@ -13,6 +13,8 @@ import pandas as pd
 import xgboost as xgb
 from sklearn.metrics import log_loss
 from sklearn import model_selection
+from sklearn.cluster import KMeans
+import kneighbors as kn
 
 
 
@@ -20,7 +22,7 @@ class XGBoost_Classifier:
     '''
     The main classifier
     '''
-    def __init__(self,_num_rounds,_eta=0.05,_gamma=0,_max_depth=10,_min_child_weight=1,_max_delt_step=0,
+    def __init__(self,_num_rounds,_eta=0.05,_gamma=0,_max_depth=10,_min_child_weight=1,_max_delta_step=0,
                  _subsample=0.5,_colsample_bytree=0.5,_scale_position_weight=0,
                  _objective='multi:softprob',_num_class = 3,_eval_metric='mlogloss',
                  _seed=0,_silent=1):
@@ -29,15 +31,17 @@ class XGBoost_Classifier:
         self.param['gamma'] = _gamma
         self.param['max_depth'] = _max_depth
         self.param['min_child_weight'] = _min_child_weight
-        self.param['max_delt_step'] = _max_delt_step
+        self.param['max_delta_step'] = _max_delta_step
         self.param['subsample']= _subsample
         self.param['colsample_bytree'] = _colsample_bytree
+        self.param['lambda'] = 2
         self.param['scale_position_weght'] = _scale_position_weight
         self.param['objective'] = _objective
         self.param['num_class'] = _num_class
         self.param['eval_metric'] = _eval_metric
         self.param['seed'] = _seed
         self.param['silent'] = _silent
+        self.param['updater'] = 'grow_gpu'
         self.num_rounds = _num_rounds
         
     def train(self,x_train,y_train, eval_list=(), early_stopping=None):
@@ -79,6 +83,21 @@ def feature_trans_bed(df,used_columns):
     used_columns.extend(['bedrooms','bathrooms','pricePerBed','pricePerBath','pricePerRoom'])
     return df,used_columns
 
+#处理坐标，使用KNN将地理坐标变为该处预期价格
+def feature_trans_location(neigh, df,used_columns):
+    print("calculating locationValue")
+    for key in df['latitude'].keys():
+        df.at[key,'locationValue'] = neigh.predict([[df['latitude'][key],df['longitude'][key]]])
+    df['netLocationValue'] = df['locationValue'] - df['price'] #溢价
+#    if 'latitude' in used_columns:
+#        used_columns.remove('latitude')
+#    if 'longitude' in used_columns:
+#        used_columns.remove('longitude')
+    used_columns += ['locationValue']
+    used_columns += ['netLocationValue']
+    print("locationValue done!")
+    return df,used_columns
+
 #对建立时间的简单分解
 def feature_trans_create_time(df,used_columns):
     '''
@@ -92,7 +111,7 @@ def feature_trans_create_time(df,used_columns):
     df['dayofweek'] = create_date.dt.dayofweek
     if 'created' in used_columns:
         used_columns.remove('created')
-    used_columns += ['year','month','day']
+    used_columns += ['year','month','day', 'dayofweek']
     return df,used_columns
 
 #没有用
@@ -137,6 +156,36 @@ def feature_trans_manager_id_2(df_train,df_test,used_clumns):
     X_val_transformed = trans.transform(df_test)
     used_clumns.append('manager_skill')
     return X_train_transformed,X_val_transformed,used_clumns
+
+def feature_kmeans(df_train, df_test, used_columns):
+    all_data = df_train.append(df_test)
+    
+    print('Identify bad geographic coordinates')
+    all_data['bad_addr'] = 0
+    mask = ~all_data['latitude'].between(40.5, 40.9)
+    mask = mask | ~all_data['longitude'].between(-74.05, -73.7)
+    bad_rows = all_data[mask]
+    all_data.loc[mask, 'bad_addr'] = 1
+    
+    print('Create neighborhoods')
+    # Replace bad values with mean
+    mean_lat = all_data.loc[all_data['bad_addr']==0, 'latitude'].mean()
+    all_data.loc[all_data['bad_addr']==1, 'latitude'] = mean_lat
+    mean_long = all_data.loc[all_data['bad_addr']==0, 'longitude'].mean()
+    all_data.loc[all_data['bad_addr']==1, 'longitude'] = mean_long
+    # From: https://www.kaggle.com/arnaldcat/two-sigma-connect-rental-listing-inquiries/unsupervised-and-supervised-neighborhood-encoding
+    kmean_model = KMeans(42)
+    loc_df = all_data[['longitude', 'latitude']].copy()
+    standardize = lambda x: (x - x.mean()) / x.std()
+    loc_df['longitude'] = standardize(loc_df['longitude'])
+    loc_df['latitude'] = standardize(loc_df['latitude'])
+    kmean_model.fit(loc_df)
+    all_data['neighborhoods'] = kmean_model.labels_
+    used_columns.extend(['bad_addr', 'neighborhoods'])
+    mask = all_data['interest_level'].isnull()
+    train = all_data[~mask].copy()
+    test = all_data[mask].copy()
+    return train, test, used_columns
 
 
 #阿东提取的features特征
@@ -205,10 +254,12 @@ def run_model(path_train,path_test,path_save = None,kfold = 0):
                   ,'longitude','price']
     df_train = target_trans(df_train)
     df_list = []
+    neigh = kn.PositionValueProphet(20)
     for df in [df_train,df_test]:
         df,used_columns = feature_trans_create_time(df,used_columns)
         df,used_columns = feature_trans_features_again(df,used_columns)
         df,used_columns = feature_trans_bed(df,used_columns)
+#        df,used_columns = feature_trans_location(neigh, df, used_columns)
         # Temp feature, Description Length
         df['length'] = df['description'].str.split().apply(len)
         used_columns.extend(['length'])
@@ -218,8 +269,11 @@ def run_model(path_train,path_test,path_save = None,kfold = 0):
     df_train,df_test = df_list
 
     df_train,df_test,used_columns = feature_trans_manager_id_2(df_train,df_test,used_columns)
+    df_train, df_test, used_columns = feature_kmeans(df_train, df_test, used_columns)
+    #used_columns.remove('longitude')
+    #used_columns.remove('latitude')
 
-    classifier = XGBoost_Classifier(3000,_eta=0.01,_gamma=0,_max_depth=10,_min_child_weight=1,_max_delt_step=0,
+    classifier = XGBoost_Classifier(2000,_eta=0.02,_gamma=0,_max_depth=10,_min_child_weight=2,_max_delta_step=1,
                  _subsample=0.5,_colsample_bytree=0.5,_scale_position_weight=0,
                  _objective='multi:softprob',_num_class = 3,_eval_metric='mlogloss',
                  _seed=0,_silent=1)
@@ -235,7 +289,7 @@ def run_model(path_train,path_test,path_save = None,kfold = 0):
         x_test = df_train[used_columns].iloc[test]
         y_test = df_train['target'].iloc[test]
         xgmat_test = xgb.DMatrix(x_test,label=y_test)
-        classifier.train(x_train, y_train, [(xgmat_test, 'valid')], 20)
+        classifier.train(x_train, y_train, [(xgmat_test, 'valid')], 10)
         print('train done!\nstart to predict and calculate the trainning loss..')
         y_train_predict,train_loss = classifier.predict_logloss(x_train,y_train)
         print('train shape is %s \ntrain loss is %.9f' % ((str(x_train.shape)),train_loss))
